@@ -19,3 +19,30 @@ You can install the required libraries using the following command:
 
 ```sh
 pip install pandas pyxlsb
+
+```
+
+## Usage
+
+1. Clone the repository:
+
+```sh
+git clone https://github.com/abamakbar07/countLineXLSB.git
+cd countLineXLSB
+```
+
+2. Place your `.xlsb` files in the cloned repository's directory.
+
+3. Run the script:
+
+```sh
+python script.py
+```
+
+4. Follow the prompts to select the files and sheets you wish to analyze.
+
+5. View the results:
+
+- The script will output the number of rows with "Pending" status in each file.
+- It will also calculate the difference in row count between the two selected sheets and display the final result.
+
