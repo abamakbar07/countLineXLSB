@@ -81,5 +81,8 @@ def process_files():
     print(f"Difference in row count: {row_difference}")
     print(f"Final result (Pending in both files + row difference): {final_result}")
 
+    # Prevent the command prompt from closing immediately
+    input("\nPress Enter to close the program...")
+
 # Run the function to perform the task
 process_files()
