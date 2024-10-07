@@ -14,16 +14,34 @@ def count_pending_in_status_column(file_name, sheet_name):
             df = pd.DataFrame(data[1:], columns=data[0])
 
             # Check if 'Status' column exists
-            if 'Status' not in df.columns:
-                raise KeyError(f"'Status' column not found in sheet '{sheet_name}' of file '{file_name}'.")
-
-            # Count the occurrences of 'Pending' in the 'Status' column
-            pending_count = df['Status'].str.contains('Pending', case=False).sum()
+            if 'Status' in df.columns:
+                # Count the occurrences of 'Pending' in the 'Status' column
+                pending_count = df['Status'].str.contains('Pending', case=False).sum()
+            else:
+                # Skip the sheet if 'Status' column doesn't exist
+                print(f"Sheet '{sheet_name}' skipped (No 'Status' column).")
+                pending_count = 0
 
             # Count the total number of rows
             total_rows = len(df)
     
     return pending_count, total_rows
+
+def get_pending_count_and_rows(file_name):
+    with open_workbook(file_name) as wb:
+        sheet_names = wb.sheets
+        total_pending = 0
+        total_rows = 0
+        
+        for sheet_name in sheet_names:
+            try:
+                pending_count, rows = count_pending_in_status_column(file_name, sheet_name)
+                total_pending += pending_count
+                total_rows += rows
+            except Exception as e:
+                print(f"Error processing sheet '{sheet_name}' in file '{file_name}': {e}")
+        
+        return total_pending, total_rows
 
 def process_files():
     # List all files in the current directory
@@ -48,41 +66,37 @@ def process_files():
     first_file = xlsb_files[first_file_choice - 1]
     second_file = xlsb_files[second_file_choice - 1]
     
-    def get_pending_count_and_rows(file_name):
-        with open_workbook(file_name) as wb:
-            sheet_names = wb.sheets
-            
-            # Display available sheets to the user
-            print(f"Available sheets in '{file_name}':")
-            for i, sheet_name in enumerate(sheet_names, 1):
-                print(f"{i}. {sheet_name}")
-            
-            # Prompt user to select a sheet
-            sheet_choice = int(input("Enter the number corresponding to the sheet you want to analyze: "))
-            chosen_sheet_name = sheet_names[sheet_choice - 1]
-            
-            # Count 'Pending' and total rows
-            pending_count, total_rows = count_pending_in_status_column(file_name, chosen_sheet_name)
-        
-        return pending_count, total_rows
-    
     # Get pending counts and row counts for both files
+    print(f"\nProcessing file: {first_file}")
     first_file_pending_count, first_file_rows = get_pending_count_and_rows(first_file)
+    
+    print(f"\nProcessing file: {second_file}")
     second_file_pending_count, second_file_rows = get_pending_count_and_rows(second_file)
     
-    # Calculate the difference in row count between the two sheets
+    # Calculate the difference in row count between the two files
     row_difference = abs(second_file_rows - first_file_rows)
     
     # Calculate the final result
     final_result = first_file_pending_count + second_file_pending_count + row_difference
     
-    print(f"Pending in first file: {first_file_pending_count}")
+    print(f"\nPending in first file: {first_file_pending_count}")
     print(f"Pending in second file: {second_file_pending_count}")
     print(f"Difference in row count: {row_difference}")
     print(f"Final result (Pending in both files + row difference): {final_result}")
+    
+    ask_to_restart()
 
-    # Prevent the command prompt from closing immediately
-    input("\nPress Enter to close the program...")
+def ask_to_restart():
+    # Ask the user if they want to restart the process
+    restart_choice = input("\nWould you like to restart the process? (yes/no): ").strip().lower()
+    if restart_choice == 'yes':
+        print("\nRestarting the process...\n")
+        process_files()
+    elif restart_choice == 'no':
+        print("\nProcess completed. Exiting now...")
+    else:
+        print("\nInvalid input. Please enter 'yes' or 'no'.")
+        ask_to_restart()
 
 # Run the function to perform the task
 process_files()
