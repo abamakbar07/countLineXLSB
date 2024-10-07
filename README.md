@@ -5,7 +5,6 @@ This Python script allows users to analyze `.xlsb` files to count the occurrence
 ## Features
 
 - **Process `.xlsb` Files**: The script processes `.xlsb` files in the current directory.
-- **User Selection**: Users can select which `.xlsb` files and sheets to analyze.
 - **Counts "Pending" Status**: Counts the occurrences of the term "Pending" in the `Status` column for both selected sheets.
 - **Row Difference Calculation**: Calculates the difference in the total number of rows between the two selected sheets and includes this difference in the final result.
 
